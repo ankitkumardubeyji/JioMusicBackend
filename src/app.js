@@ -10,7 +10,7 @@ app.use(cors({
 }))
 */
 app.use(cors({
-  origin: 'https://jio-music-frontend-git-main-ankit-kumar-dubeys-projects.vercel.app/'
+  origin: '*'
 }));
 app.use(express.json({limit:"16kb"}))
 app.use(express.urlencoded({extended:true, limit:"16kb"}))
