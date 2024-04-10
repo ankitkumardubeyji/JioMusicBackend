@@ -9,6 +9,24 @@ app.use(cors({
     credentials:true 
 }))
 */
+const allowedOrigins = ['https://jio-music-frontend.vercel.app/','https://jio-music-frontend-git-main-ankit-kumar-dubeys-projects.vercel.app/'
+                      'https://jio-music-frontend-kzwnznnow-ankit-kumar-dubeys-projects.vercel.app/'];
+app.use(
+  cors({
+    origin: (origin, callback) => {
+     
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error(`${origin} not allowed by cors`));
+        }
+    
+    },
+    optionsSuccessStatus: 200,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  }),
+);
 
 app.use(express.json({limit:"16kb"}))
 app.use(express.urlencoded({extended:true, limit:"16kb"}))
