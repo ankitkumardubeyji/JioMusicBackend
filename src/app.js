@@ -10,7 +10,7 @@ app.use(cors({
 }))
 */
 const allowedOrigins = ['https://jio-music-frontend.vercel.app/','https://jio-music-frontend-git-main-ankit-kumar-dubeys-projects.vercel.app/'
-                      'https://jio-music-frontend-kzwnznnow-ankit-kumar-dubeys-projects.vercel.app/'];
+                      ];
 app.use(
   cors({
     origin: (origin, callback) => {
