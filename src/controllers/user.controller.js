@@ -127,8 +127,8 @@ const loginUser = asyncHandler(async(req,res,next)=>{
        secure:true 
     }
     return res.status(200)
-    .cookie("accessToken",accessToken,{ httpOnly: true })
-    .cookie("refreshToken",refreshToken,{ httpOnly: true })
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshToken",refreshToken,options)
     .json(new ApiResponse(200,{
         user:loggedInUser,
         accessToken,
