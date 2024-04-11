@@ -122,10 +122,7 @@ const loginUser = asyncHandler(async(req,res,next)=>{
 
     const {accessToken,refreshToken} = await generateAccessRefreshToken(user._id)
     const loggedInUser = await User.findById(user._id).select('-password')
-        const options = {
-       httpOnly:true,
-       secure:true 
-    }
+    
     return res.status(200)
     .cookie("accessToken",accessToken)
     .cookie("refreshToken",refreshToken)
