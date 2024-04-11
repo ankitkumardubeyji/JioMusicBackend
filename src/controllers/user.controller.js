@@ -121,12 +121,15 @@ const loginUser = asyncHandler(async(req,res,next)=>{
     }
 
     const {accessToken,refreshToken} = await generateAccessRefreshToken(user._id)
-    console.log(accessToken)
-    console.log(refreshToken);
     const loggedInUser = await User.findById(user._id).select('-password')
     return res.status(200)
-    .cookie("Your_accessToken",accessToken, { secure: true })
-    .cookie("Your_refreshToken",refreshToken, { secure: true })
+         const options = {
+       httpOnly:true,
+       secure:true 
+    }
+
+    .cookie("accessToken",accessToken,{ httpOnly: true })
+    .cookie("refreshToken",refreshToken,{ httpOnly: true })
     .json(new ApiResponse(200,{
         user:loggedInUser,
         accessToken,
