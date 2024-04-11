@@ -85,8 +85,8 @@ const registerUser = asyncHandler(async(req,res,next)=>{
     const {accessToken,refreshToken} = await generateAccessRefreshToken(createdUser._id)
 
     return res.status(200)
-    .cookie("accessToken",accessToken)
-    .cookie("refreshToken",refreshToken)
+    .cookie("accessToken",accessToken,{ domain: 'https://jio-music-frontend.vercel.app/', httpOnly: true })
+    .cookie("refreshToken",refreshToken,{ domain: 'https://jio-music-frontend.vercel.app/', httpOnly: true })
     .json(
         new ApiResponse(
             200,
@@ -123,8 +123,8 @@ const loginUser = asyncHandler(async(req,res,next)=>{
     const {accessToken,refreshToken} = await generateAccessRefreshToken(user._id)
     const loggedInUser = await User.findById(user._id).select('-password')
     return res.status(200)
-    .cookie("accessToken",accessToken)
-    .cookie("refreshToken",refreshToken)
+    .cookie("accessToken",accessToken, { domain: 'https://jio-music-frontend.vercel.app/', httpOnly: true })
+    .cookie("refreshToken",refreshToken,{ domain: 'https://jio-music-frontend.vercel.app/', httpOnly: true })
     .json(new ApiResponse(200,{
         user:loggedInUser,
         accessToken,
