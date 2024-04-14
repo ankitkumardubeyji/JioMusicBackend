@@ -4,6 +4,11 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
+const cookieOptions = {
+  secure: true ,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  httpOnly: true,  // so that the js information access nhi ho ske 
+}
 
 // function to genrate the accessToken and refreshToken for the user with the given id and store it in the database.
 const generateAccessRefreshToken = async(userId) =>{
@@ -124,8 +129,8 @@ const loginUser = asyncHandler(async(req,res,next)=>{
     console.log(accessToken);
     const loggedInUser = await User.findById(user._id).select('-password')
     return res.status(200)
-    .cookie("accessToken",accessToken)
-    .cookie("refreshToken",refreshToken)
+    .cookie("accessToken",accessToken,cookieOptions)
+    .cookie("refreshToken",refreshToken,cookieOptions)
     .json(new ApiResponse(200,{
         user:loggedInUser,
         accessToken,
