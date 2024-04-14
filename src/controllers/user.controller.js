@@ -100,38 +100,39 @@ const registerUser = asyncHandler(async(req,res,next)=>{
     )
 })
 
-const loginUser = asyncHandler(async(req,res,next)=>{
-    const {email,password,username} = req.body;
-    if(!email || !password || !username){
-        throw new ApiError(400,"All fields are required")
-    }
-    
-    const user = await  User.findOne({
-        $or:[{username},{email}]
-    })
-
-    if(!user){
-        throw new ApiError(400,"User doesnt exists")
+const loginUser = asyncHandler(async (req, res, next) => {
+    const { email, password, username } = req.body;
+    if (!email || !password || !username) {
+        throw new ApiError(400, "All fields are required");
     }
 
-    const isPasswordValid = user.isPasswordCorrect(password)
+    const user = await User.findOne({
+        $or: [{ username }, { email }]
+    });
 
-    if(!isPasswordValid){
-        throw new ApiError(400,"Please enter the valid password")
+    if (!user) {
+        throw new ApiError(400, "User doesn't exist");
     }
 
-    const {accessToken,refreshToken} = await generateAccessRefreshToken(user._id)
-    const loggedInUser = await User.findById(user._id).select('-password')
-    
-    return res.status(200)
-    .cookie("accessToken",accessToken)
-    .cookie("refreshToken",refreshToken)
-    .json(new ApiResponse(200,{
-        user:loggedInUser,
+    const isPasswordValid = user.isPasswordCorrect(password);
+
+    if (!isPasswordValid) {
+        throw new ApiError(400, "Please enter the valid password");
+    }
+
+    const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);
+    const loggedInUser = await User.findById(user._id).select('-password');
+
+    // Set cookies and send response
+    res.cookie("accessToken", accessToken, { httpOnly: true, secure: true });
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
+
+    return res.status(200).json(new ApiResponse(200, {
+        user: loggedInUser,
         accessToken,
-        refreshToken 
-    }, "User logged in successfully "));
-})
+        refreshToken
+    }, "User logged in successfully"));
+});
 
 
 const logOut = asyncHandler(async(req,res,next)=>{
