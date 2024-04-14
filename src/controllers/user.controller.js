@@ -129,8 +129,8 @@ const loginUser = asyncHandler(async(req,res,next)=>{
     console.log(accessToken);
     const loggedInUser = await User.findById(user._id).select('-password')
     return res.status(200)
-    .cookie("accessToken",accessToken,cookieOptions)
-    .cookie("refreshToken",refreshToken,cookieOptions)
+    .cookie("accessToken",accessToken)
+    .cookie("refreshToken",refreshToken)
     .json(new ApiResponse(200,{
         user:loggedInUser,
         accessToken,
