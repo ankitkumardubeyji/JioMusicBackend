@@ -100,55 +100,38 @@ const registerUser = asyncHandler(async(req,res,next)=>{
     )
 })
 
-const loginUser = asyncHandler(async (req, res, next) => {
- const { email, password, username } = req.body;
-if (!email || !password || !username) {
-    throw new ApiError(400, "All fields are required");
-}
+const loginUser = asyncHandler(async(req,res,next)=>{
+    const {email,password,username} = req.body;
+    if(!email || !password || !username){
+        throw new ApiError(400,"All fields are required")
+    }
+    
+    const user = await  User.findOne({
+        $or:[{username},{email}]
+    })
 
-const user = await User.findOne({
-    $or: [{ username }, { email }]
-});
+    if(!user){
+        throw new ApiError(400,"User doesnt exists")
+    }
 
-if (!user) {
-    throw new ApiError(400, "User doesn't exist");
-}
+    const isPasswordValid = user.isPasswordCorrect(password)
 
-const isPasswordValid = user.isPasswordCorrect(password);
+    if(!isPasswordValid){
+        throw new ApiError(400,"Please enter the valid password")
+    }
 
-if (!isPasswordValid) {
-    throw new ApiError(400, "Please enter the valid password");
-}
-
-const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);
-const loggedInUser = await User.findById(user._id).select('-password');
-
-// Set cookies and send response
-res.cookie("accessToken", accessToken, { 
-    httpOnly: true, 
-    secure: req.secure, // Ensure secure flag is set based on request protocol
-    sameSite: "strict", // Enhance security with sameSite attribute
-    domain: "jio-music-frontend.vercel.app", // Set domain to match your frontend domain
-    // Optionally, set path attribute if necessary
-    // path: "/",
-});
-
-res.cookie("refreshToken", refreshToken, { 
-    httpOnly: true, 
-    secure: req.secure, // Ensure secure flag is set based on request protocol
-    sameSite: "strict", // Enhance security with sameSite attribute
-    domain: "jio-music-frontend.vercel.app", // Set domain to match your frontend domain
-    // Optionally, set path attribute if necessary
-    // path: "/",
-});
-
-return res.status(200).json(new ApiResponse(200, {
-    user: loggedInUser,
-    accessToken,
-    refreshToken
-}, "User logged in successfully"));
-
-});
+    const {accessToken,refreshToken} = await generateAccessRefreshToken(user._id)
+    console.log(accessToken);
+    const loggedInUser = await User.findById(user._id).select('-password')
+    return res.status(200)
+    .cookie("accessToken",accessToken)
+    .cookie("refreshToken",refreshToken)
+    .json(new ApiResponse(200,{
+        user:loggedInUser,
+        accessToken,
+        refreshToken 
+    }, "User logged in successfully "));
+})
 
 
 const logOut = asyncHandler(async(req,res,next)=>{
