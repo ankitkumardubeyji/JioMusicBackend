@@ -78,7 +78,7 @@ const getYourSongs = asyncHandler(async(req,res)=>{
 const getAllSongs = asyncHandler(async(req,res)=>{
     console.log("vabbbbbbb");
    // checking if any of the below has been passed by the user as query params otherwise assigning the below with the default values  
-    let {page=1,limit=12,query,sortBy,sortType,userId} = req.query;
+    let {page=1,limit=20,query,sortBy,sortType,userId} = req.query;
 
     // parsing the page and the limit
     page = parseInt(page,10); // here 10 denotes the decimal 
