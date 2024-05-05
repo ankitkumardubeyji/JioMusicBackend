@@ -173,6 +173,9 @@ const getUserArtistProfile = asyncHandler(async(req,res)=>{
     }
 
     const user = await User.find({username:username})
+    if(!user){
+      throw new ApiError(400,"No user found")
+    }
     console.log(user[0]._id)
 
     // values returned from the aggragtion pipeline are arrays 
