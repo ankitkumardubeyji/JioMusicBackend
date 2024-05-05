@@ -165,6 +165,7 @@ const logOut = asyncHandler(async(req,res,next)=>{
 })
 
 const getUserArtistProfile = asyncHandler(async(req,res)=>{
+  console.log("came here atleast \n");
     const {username} = req.params
 
     if(!username?.trim()){
