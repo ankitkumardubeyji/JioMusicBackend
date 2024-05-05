@@ -292,8 +292,8 @@ and we need to extract the follower field from it to check if the logged-in user
             }
         }
     ])   
-    
-    if(!artist?.length){
+    console.log(artist)
+    if(!artist || artist.length==0){
         throw new ApiError(404,"Requested User doesnt exists ")
     }
 
