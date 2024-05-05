@@ -28,6 +28,7 @@ const publishSong = asyncHandler(async(req,res,next)=>{
         throw new ApiError(400,"thumbnail is required ")
     }
 
+        
     const song = await uploadOnCloudinary(songLocalFile)
     if(!song.url){
         throw new ApiError(400,"song file couldnt be uploaded try again!")
@@ -174,7 +175,9 @@ const getAllSongs = asyncHandler(async(req,res)=>{
             songs.map((song)=>{
                 song.owner = song.owner.fullName
             })
-        if(!songs || songs.length === 0){
+
+    console.log(songs)
+        if(!songs || songs.length == 0){
             throw new ApiError(404,"songs not found ");
         }
 
