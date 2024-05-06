@@ -187,5 +187,112 @@ const getAllSongs = asyncHandler(async(req,res)=>{
 
     });
 
+ const getEverySong = asyncHandler(async(req,res)=>{
+    console.log("vabbbbbbb");
+   // checking if any of the below has been passed by the user as query params otherwise assigning the below with the default values  
+    let {page=1,query,sortBy,sortType,userId} = req.query;
 
-export {publishSong,getAllSongs,getYourSongs}
+    // parsing the page and the limit
+    page = parseInt(page,10); // here 10 denotes the decimal 
+    
+
+    // validating the page and the limit values
+    page = Math.max(1,page); // ensuring the page is atleast 1
+
+
+    const pipeline = [];
+
+    // match songs by song userId if provided
+    if(userId){
+        if(!isValidObjectId(userId)){
+            throw new ApiError(400,"userId is invalid")
+        }
+
+        pipeline.push({
+            // filtering forthe songs that has userId as the owner 
+            $match:{
+                owner: new mongoose.Types.ObjectId(userId),
+            }
+        });
+    }
+
+        // Match the songs based on the search query passed by the user
+        if(query){
+            pipeline.push({
+       // filtering all the song docs whose title or description matches with the provided text         
+                $match:{
+                    $text:{
+                        $search:query 
+                    }
+                }
+            });
+        }
+
+        // sorting the pipeline based on the sortBy and sortType
+
+        const sortCriteria = {};
+        if(sortBy && sortType){
+            sortCriteria[sortBy] = sortType === "asc" ? 1 :"-1";
+            pipeline.push({
+                $sort:sortCriteria 
+            })
+        }
+
+        // sorting in descending order based on createdAt time ie the song uploaded latest will  be at the top 
+        else{
+            sortCriteria["createdAt"] =-1;
+            pipeline.push({
+                $sort:sortCriteria 
+            })
+        }
+
+        // Applying pagination using the skip and limit
+      
+
+     
+
+        pipeline.push({
+            $lookup:{
+                from:"users",
+                localField:"owner",
+                foreignField:"_id",
+                as:"owner",
+                pipeline:[
+                    {
+                        $project:{
+                            fullName:1,
+                            _id:0
+                           
+                        }
+                    }
+                ]
+            },
+        })
+
+        pipeline.push({
+            $addFields:{
+                owner:{
+                    $first:"$owner"
+                }
+            }
+        })
+
+    
+        // executing the aggregation pipeline
+        const songs = await Song.aggregate(pipeline)
+            songs.map((song)=>{
+                song.owner = song.owner.fullName
+            })
+
+    console.log(songs)
+        if(!songs || songs.length == 0){
+            throw new ApiError(404,"songs not found ");
+        }
+
+        return res.status(200)
+        .json(new ApiResponse(200,songs,"songs fetched successfully"));
+
+
+    });
+
+export {publishSong,getAllSongs,getYourSongs,getEverySong}
